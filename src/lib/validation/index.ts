@@ -9,3 +9,11 @@ export const SignupValidationScehma = z.object({
       email: z.string().email(),
       password:z.string().min(8,{ message : 'Password should contain atleast 8 characters'})
     })
+
+  
+export const SigninValidationScehma = z.object({
+
+  
+    email: z.string().email(),
+    password:z.string().min(8,{ message : 'Password should contain atleast 8 characters'})
+  })

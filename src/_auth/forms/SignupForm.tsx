@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useToast } from "@/components/ui/use-toast";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,18 +18,21 @@ import { Button } from "@/components/ui/button";
 import { SignupValidationScehma } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 
 import { useCreateUserAccountMutation, useSignInAccount } from "@/lib/react-query/QueryAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 const SignupForm = () => {
   // 1. Define your form.
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const{checkAuthUser,isLoading:isUserLoading}=useUserContext();
   
 
-  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
+  const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
     useCreateUserAccountMutation();
-    const {mutateAsync: signInAccount, isLoading: isSigningIn}= useSignInAccount();
+    const {mutateAsync: signInAccount, isPending: isSigningIn}= useSignInAccount();
   const form = useForm<z.infer<typeof SignupValidationScehma>>({
     resolver: zodResolver(SignupValidationScehma),
     defaultValues: {
@@ -60,7 +64,17 @@ const SignupForm = () => {
         title:"Signin Failed please try again"
       })
     }
+    const isLoggedIn =  await checkAuthUser();
+    if(isLoggedIn){
+      form.reset();
+      navigate('/')
 
+    }else {
+      toast({
+        title:
+          "Signin Failed please try again",
+        })
+    }
   }
 
     return (
